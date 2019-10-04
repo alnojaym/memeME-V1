@@ -8,13 +8,8 @@
 
 import UIKit
 import Foundation
-struct Meme {
-    let topText: String
-    let bottomText: String
-    let originalImage: UIImage
-    let memedImage: UIImage
-}
-class ViewController: UIViewController, UIImagePickerControllerDelegate,
+
+class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegate,
 UINavigationControllerDelegate, UITextFieldDelegate {
 
     @IBOutlet weak var imageView: UIImageView!
@@ -31,9 +26,7 @@ UINavigationControllerDelegate, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.topTextField.delegate = self
-        self.buttomTextField.delegate = self
-        //setting the default attributes
+
         let memeTextAttributes: [NSAttributedString.Key: Any] = [
             NSAttributedString.Key.strokeColor: UIColor.black,
             NSAttributedString.Key.foregroundColor: UIColor.white,
@@ -123,6 +116,7 @@ UINavigationControllerDelegate, UITextFieldDelegate {
         
         shareButton.isEnabled = true
     }
+    
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
          picker.dismiss(animated: true, completion: nil)
      }
@@ -130,7 +124,7 @@ UINavigationControllerDelegate, UITextFieldDelegate {
      //MARK: Keyboard adjusments
      @objc func keyboardWillShow(_ notification:Notification) {
          if buttomTextField.isFirstResponder {
-             view.frame.origin.y -= getKeyboardHeight(notification)
+             view.frame.origin.y = getKeyboardHeight(notification) * (-1)
          }
      }
      
@@ -159,7 +153,7 @@ UINavigationControllerDelegate, UITextFieldDelegate {
     
     
      @IBAction func shareMeme(_ sender: Any) {
-           let meme = takeMeme()
+           let meme = generateMemedImage()
            let controller = UIActivityViewController(activityItems: [meme], applicationActivities: nil)
            present(controller, animated: true, completion: nil)
            controller.completionWithItemsHandler = { (activityType: UIActivity.ActivityType?, completed: Bool, returnedItems: [Any]?, error: Error?) -> Void in
@@ -169,16 +163,7 @@ UINavigationControllerDelegate, UITextFieldDelegate {
            }
        }
     
-    func takeMeme () -> UIImage {
-        hideToolbars(true)
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
-        let meme: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
-        UIGraphicsEndImageContext()
-        // show toolbar
-        hideToolbars(false)
-        return meme
-    }
+
     
        func hideToolbars(_ value: Bool) {
          topToolbar.isHidden = value
